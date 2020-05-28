@@ -1,29 +1,34 @@
 import UIKit
 
-class Car {
-    
-    enum TypeCar: String {
-        case sport = "Спортивной"
-        case truck = "Грузовой"
-    }
-    
-    enum ChangeIgnition: String {
-        case start = "запущен"
-        case stop = "заглушен"
-    }
+enum ChangeIgnition: String {
+    case start = "запущен"
+    case stop = "заглушен"
+}
 
-    enum ChangeWidows: String {
-        case open = "открыты"
-        case close = "закрыты"
-    }
-    
-    var model: String = ""
-    var age: Int = 0
-    var ignition: ChangeIgnition = .stop
-    var windows: ChangeWidows = .close
+enum ChangeWidows: String {
+    case open = "открыты"
+    case close = "закрыты"
+}
+
+
+protocol Car {
     
     
-    func changeIgnition(properties: ChangeIgnition) {
+    var model: String { get set }
+    var age: Int { get set }
+    var ignition: ChangeIgnition { get set }
+    var windows: ChangeWidows { get set }
+    
+    mutating func changeIgnition()
+    mutating func changeWidows()
+}
+
+
+extension Car {
+    
+    
+    
+    mutating func changeIgnition(properties: ChangeIgnition) {
         switch properties {
         case .start: self.ignition = .start
             print("У \(self.model) двигатель \(self.ignition.rawValue)")
@@ -32,7 +37,7 @@ class Car {
         }
     }
     
-    func changeWidows(properties: ChangeWidows) {
+    mutating func changeWidows(properties: ChangeWidows) {
         switch properties {
         case .open: self.windows = .open
             print("У \(self.model) окна \(self.windows.rawValue)")
@@ -40,32 +45,45 @@ class Car {
             print("У \(self.model) окна \(self.windows.rawValue)")
         }
     }
-
-    func printProperties() {
-        print("Марка машины: \(self.model), год выпуска: \(self.age), двигатель \(self.ignition.rawValue), окна \(self.windows.rawValue)")
-    }
 }
 
-class truckCar: Car {
+class TrunkCar: Car {
+    
+    func changeWidows() {
+    }
+    
+    func changeIgnition() {
+    }
+    
+    
+    var model: String = ""
+    var age: Int = 0
+    var ignition: ChangeIgnition = .stop
+    var windows: ChangeWidows = .close
+    
+    enum TypeCar: String {
+        case sport = "Спортивной"
+        case truck = "Грузовой"
+    }
+    
     
     let type: TypeCar = .truck
-    
-    var bootVolume: Int
+       
+       var bootVolume: Int
 
+       
+       init(model: String, age: Int, bootVolume: Int) {
+           self.bootVolume = bootVolume
+           self.model = model
+           self.age = age
+       }
     
-    init(model: String, age: Int, bootVolume: Int) {
-        self.bootVolume = bootVolume
-        super.init()
-        self.model = model
-        self.age = age
-    }
+     var trunkVolume: Int = 0
     
     enum ChangeTrunkStatus {
         case load
         case upload
     }
-
-    var trunkVolume: Int = 0
     
     func changeTrunkVolume(act: ChangeTrunkStatus,trunkVolume: Int) {
         switch act {
@@ -91,12 +109,31 @@ class truckCar: Car {
         }
     }
     
-    override func printProperties() {
-        print("Марка \(self.type.rawValue) машины: \(self.model), год выпуска: \(self.age), объем багажника: \(self.trunkVolume)/\(self.bootVolume) литров, двигатель \(self.ignition.rawValue), окна \(self.windows.rawValue)")
+}
+
+extension TrunkCar: CustomStringConvertible {
+    var description: String {
+        return "Марка \(self.type.rawValue) машины: \(self.model), год выпуска: \(self.age), объем багажника: \(self.trunkVolume)/\(self.bootVolume) литров, двигатель \(self.ignition.rawValue), окна \(self.windows.rawValue)"
     }
 }
 
-class sportCar: Car {
+
+class SportCar: Car {
+    func changeWidows() {
+    }
+    
+    func changeIgnition() {
+    }
+    
+    enum TypeCar: String {
+        case sport = "Спортивной"
+        case truck = "Грузовой"
+    }
+    
+    var model: String = ""
+    var age: Int = 0
+    var ignition: ChangeIgnition = .stop
+    var windows: ChangeWidows = .close
     
     let type: TypeCar = .sport
     
@@ -107,7 +144,6 @@ class sportCar: Car {
     init(model: String, age: Int, topNitro: Int) {
         self.topNitro = topNitro
         self.nitro = topNitro
-        super.init()
         self.model = model
         self.age = age
     }
@@ -141,30 +177,28 @@ class sportCar: Car {
             }
         }
     }
-    
-    override func printProperties() {
-        print("Марка \(self.type.rawValue) машины: \(self.model), год выпуска: \(self.age), бак нитро: \(self.nitro)/\(self.topNitro) литров, двигатель \(self.ignition.rawValue), окна \(self.windows.rawValue)")
-    }
-    
 }
 
+extension SportCar: CustomStringConvertible {
+var description: String {
+    return "Марка \(self.type.rawValue) машины: \(self.model), год выпуска: \(self.age), бак нитро: \(self.nitro)/\(self.topNitro) литров, двигатель \(self.ignition.rawValue), окна \(self.windows.rawValue)"
+    }
+}
 
-var ladaLargus = truckCar(model: "Lada Largus", age: 2014, bootVolume: 560)
-var mazda = sportCar(model: "Mazda", age: 2009, topNitro: 5)
-var largus = truckCar(model: "Lada", age: 2007, bootVolume: 350)
-var mazda3 = sportCar(model: "Mazda 3", age: 2018, topNitro: 10)
+var ladaLargus = TrunkCar(model: "Lada Largus", age: 2014, bootVolume: 560)
+var mazda = SportCar(model: "Mazda", age: 2009, topNitro: 5)
+var largus = TrunkCar(model: "Lada", age: 2007, bootVolume: 350)
+var mazda3 = SportCar(model: "Mazda 3", age: 2018, topNitro: 10)
 
-ladaLargus.printProperties()
-mazda3.printProperties()
+print(ladaLargus.description)
+print(mazda3.description)
 ladaLargus.changeTrunkVolume(act: .load, trunkVolume: 300)
-ladaLargus.printProperties()
+print(ladaLargus.description)
 mazda3.changeNitro(act: .use, nitro: 5)
 mazda3.changeNitro(act: .refill, nitro: 7)
 largus.changeWidows(properties: .open)
 mazda.changeIgnition(properties: .start)
 largus.changeTrunkVolume(act: .load, trunkVolume: 400)
 mazda.changeNitro(act: .use, nitro: 3)
-ladaLargus.printProperties()
-mazda.printProperties()
-largus.printProperties()
-mazda3.printProperties()
+print(ladaLargus.description)
+print(mazda.description)
